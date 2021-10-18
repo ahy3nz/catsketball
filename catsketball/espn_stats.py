@@ -1,3 +1,4 @@
+from collections import defaultdict
 import datetime
 from typing import Optional
 import pandas as pd
@@ -62,17 +63,25 @@ def get_weekly_stats_player(
     team_id = team_id_name_mapping[player.proTeam.upper()]
     num_games = get_num_games(schedule, team_id, start_date, end_date)
     player_avg_stats = get_avg_stats_player(player)
+    if player.injured:
+        relevant_stats = {
+            k: 0
+            for k in constants.keep_keys
+        }
+        relevant_stats['FG%'] = 0
+        relevant_stats['FT%'] = 0
     
-    relevant_stats = {
-        k: num_games * player_avg_stats[k] 
-        for k in constants.keep_keys
-    }
-    relevant_stats['FG%'] = (
-        relevant_stats['FGM'] / relevant_stats['FGA']
-    )
-    relevant_stats['FT%'] = (
-        relevant_stats['FTM'] / relevant_stats['FTA']    
-    )
+    else:
+        relevant_stats = {
+            k: num_games * player_avg_stats[k] 
+            for k in constants.keep_keys
+        }
+        relevant_stats['FG%'] = (
+            relevant_stats['FGM'] / relevant_stats['FGA']
+        )
+        relevant_stats['FT%'] = (
+            relevant_stats['FTM'] / relevant_stats['FTA']    
+        )
     relevant_stats['Name'] = player.name
     
     return relevant_stats
