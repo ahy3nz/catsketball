@@ -1,6 +1,7 @@
 import datetime
 from typing import Optional
 import pandas as pd
+import warnings
 from espn_api.basketball import Player, League, Team
 
 import constants
@@ -41,6 +42,7 @@ def get_avg_stats_player(player: Player):
         stats_to_add = player.stats['102022']['avg']
     else:
         warnings.warn(f"Can't find stats for player {player}")
+        return {}
     return stats_to_add
 
 
@@ -130,9 +132,25 @@ def get_weekly_stats_team(
 
 
 def reduce_roster_stats_to_team(roster_stats: pd.DataFrame):
+    """ Colalpse a set of player stats to a single team stat"""
     summed = roster_stats[constants.keep_keys].sum().to_dict()
     summed['FG%'] = summed['FGM'] / summed['FGA']
     summed['FT%'] = summed['FTM'] / summed['FTA']
     
     return summed
     
+    
+def summarize_league_per_team(league):
+    """ Give stats per team in the league"""
+    all_records = []
+    for team in league.teams:
+        record = get_avg_stats_team(team)
+        record['Name'] = team.team_name
+        all_records.append(record)
+    return pd.DataFrame(all_records).set_index("Name")
+
+
+def build_team_mapping(league):
+    return {
+        team.team_name: team for team in league.teams
+    }

@@ -1,0 +1,11 @@
+name: catsketball
+channels:
+    - defaults
+    - conda-forge
+dependencies:
+    - pandas
+    - streamlit
+    - pip
+    - pip:
+        - espn_api
+
