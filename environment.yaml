@@ -6,6 +6,7 @@ dependencies:
     - pandas
     - streamlit
     - pip
+    - colour
     - pip:
         - espn_api
 

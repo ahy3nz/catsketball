@@ -3,7 +3,7 @@ from espn_api.basketball import League
 import pandas as pd
 import streamlit as st
 
-import constants, espn_stats
+import constants, espn_stats, styling
 
 st.title("Fantasy basketball team analyzer (ESPN)")
 # This first form submits ESPN league settings
@@ -37,7 +37,11 @@ if (
 
     with st.expander("League-wide comparisons"):
         league_summary = espn_stats.summarize_league_per_team(league)
-        st.dataframe(data=league_summary)
+        #st.dataframe(data=league_summary)
+        st.markdown(
+            styling.style_categories(league_summary).to_html(),
+            unsafe_allow_html=True
+        )
         
     with st.expander("H2H comparisons"):
         h2h_form = st.form(key='h2h_form')
@@ -75,4 +79,7 @@ if (
                 pd.DataFrame([team_1_stats, team_2_stats])
                 .set_index("Name")
             )
-            st.dataframe(h2h_comparison)
+            #st.dataframe(styling.style_categories(h2h_comparison))
+            st.markdown(
+                styling.style_categories(h2h_comparison).to_html()
+            )
