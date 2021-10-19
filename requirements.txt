@@ -47,6 +47,8 @@ entrypoints==0.3
     #   altair
     #   jupyter-client
     #   nbconvert
+espn-api==0.18.4
+    # via -r requirements.in
 gitdb==4.0.7
     # via gitpython
 gitpython==3.1.24
@@ -186,7 +188,9 @@ pyzmq==22.3.0
     #   jupyter-client
     #   notebook
 requests==2.26.0
-    # via streamlit
+    # via
+    #   espn-api
+    #   streamlit
 send2trash==1.8.0
     # via notebook
 six==1.16.0

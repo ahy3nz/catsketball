@@ -8,9 +8,13 @@ import constants, espn_stats, styling
 st.title("Fantasy basketball team analyzer (ESPN)")
 # This first form submits ESPN league settings
 # Saving them to streamlit session state
-with st.expander("ESPN league settings"):
+with st.expander("ESPN league cookies"):
     league_info_form = st.form(key='league_info_form')
     with league_info_form:
+        st.markdown(
+            "[How to access ESPN fantasy league cookies]" + 
+            "(https://github.com/cwendt94/espn-api/discussions/150)"
+        )
         league_id = st.text_input("League ID: ", key='league_id')
         espn_s2 = st.text_input(
             "ESPN S2: ", type='password', key='espn_s2'
