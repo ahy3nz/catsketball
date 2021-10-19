@@ -32,6 +32,8 @@ charset-normalizer==2.0.7
     # via requests
 click==7.1.2
     # via streamlit
+colour==0.1.5
+    # via -r requirements.in
 debugpy==1.5.1
     # via ipykernel
 decorator==5.1.0

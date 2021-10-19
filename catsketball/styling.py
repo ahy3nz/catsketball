@@ -43,7 +43,7 @@ def style_categories(df: pd.DataFrame):
     
     return (
         df_to_show.style
-        .set_tooltips(tooltips)
         .apply(coloring, n_colors=len(df_to_show))
         .format(precision=2)
+        .set_tooltips(tooltips)
     )

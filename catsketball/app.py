@@ -23,9 +23,9 @@ with st.expander("ESPN league settings"):
     
 # If espn-league cookies are in session state, proceed
 if (
-    (st.session_state.get("league_id", None) is not None) and 
-    (st.session_state.get("espn_s2", None) is not None) and 
-    (st.session_state.get("swid", None) is not None)
+    (st.session_state.get("league_id", '') != '') and 
+    (st.session_state.get("espn_s2", '') != '') and 
+    (st.session_state.get("swid", '') != '')
 ):
     league = League(
         league_id=st.session_state['league_id'],
@@ -42,6 +42,7 @@ if (
             styling.style_categories(league_summary).to_html(),
             unsafe_allow_html=True
         )
+        st.caption("Ignoring injured players")
         
     with st.expander("H2H comparisons"):
         h2h_form = st.form(key='h2h_form')
@@ -81,5 +82,7 @@ if (
             )
             #st.dataframe(styling.style_categories(h2h_comparison))
             st.markdown(
-                styling.style_categories(h2h_comparison).to_html()
+                styling.style_categories(h2h_comparison).to_html(),
+                unsafe_allow_html=True
             )
+            st.caption("Neglecting injured players")
