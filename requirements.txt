@@ -183,6 +183,8 @@ pytz==2021.3
     # via pandas
 pytz-deprecation-shim==0.1.0.post0
     # via tzlocal
+pyyaml==6.0
+    # via -r requirements.in
 pyzmq==22.3.0
     # via
     #   jupyter-client

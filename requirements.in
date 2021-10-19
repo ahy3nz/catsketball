@@ -1,4 +1,5 @@
 colour
+espn_api
 pandas
 streamlit
-espn_api
+pyyaml
