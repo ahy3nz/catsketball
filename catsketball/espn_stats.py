@@ -43,7 +43,7 @@ def get_avg_stats_player(player: Player):
         stats_to_add = player.stats['102022']['avg']
     else:
         warnings.warn(f"Can't find stats for player {player}")
-        return {}
+        return defaultdict(int)
     return stats_to_add
 
 
@@ -98,6 +98,7 @@ def get_avg_stats_roster(team: Team):
     return (
         pd.DataFrame(all_records)
         .set_index("Name")
+        .fillna(0.0)
     )
 
 
@@ -115,7 +116,7 @@ def get_weekly_stats_roster(
         entry['Name'] = player.name
         all_records.append(entry)
         
-    return pd.DataFrame(all_records).set_index("Name")
+    return pd.DataFrame(all_records).set_index("Name").fillna(0.0)
 
 
 def get_avg_stats_team(team: Team):
@@ -156,7 +157,7 @@ def summarize_league_per_team(league):
         record = get_avg_stats_team(team)
         record['Name'] = team.team_name
         all_records.append(record)
-    return pd.DataFrame(all_records).set_index("Name")
+    return pd.DataFrame(all_records).set_index("Name").fillna(0.0)
 
 
 def build_team_mapping(league):
