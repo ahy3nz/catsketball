@@ -37,7 +37,11 @@ def get_avg_stats_player(player: Player):
     Stats prefaced with '10' are predicted stats for that season
     
     """
-    if '002021' in player.stats:
+    # Ignore player if on IR
+    # If a player is injured but NOT on IR, still factor his stats
+    if player.lineupSlot=="IR":
+        return defaultdict(int)
+    elif '002021' in player.stats:
         stats_to_add = player.stats['002021']['avg']
     elif '102022' in player.stats:
         stats_to_add = player.stats['102022']['avg']
@@ -63,7 +67,8 @@ def get_weekly_stats_player(
     team_id = team_id_name_mapping[player.proTeam.upper()]
     num_games = get_num_games(schedule, team_id, start_date, end_date)
     player_avg_stats = get_avg_stats_player(player)
-    if player.injured:
+    # Ignore player if injured or IR
+    if player.injured or (player.lineupSlot=="IR"):
         relevant_stats = {
             k: 0
             for k in constants.keep_keys
@@ -88,7 +93,8 @@ def get_weekly_stats_player(
 
 
 def get_avg_stats_roster(team: Team):
-    """ For a fantasy team, get per-game-averaged for each player """
+    """ For a fantasy team, get per-game-averaged stats 
+    for each player """
     all_records = []
     for player in team.roster:
         player_stats = get_avg_stats_player(player)
@@ -120,6 +126,7 @@ def get_weekly_stats_roster(
 
 
 def get_avg_stats_team(team: Team):
+    """ Get average stats for an entire team"""
     to_return = reduce_roster_stats_to_team(
         get_avg_stats_roster(team)
     )
@@ -133,6 +140,7 @@ def get_weekly_stats_team(
     start_date: datetime.datetime, 
     end_date: datetime.datetime
 ):
+    """ Get weekly stats for an entire team"""
     to_return = reduce_roster_stats_to_team(
         get_weekly_stats_roster(team, start_date, end_date)
     )
@@ -142,7 +150,7 @@ def get_weekly_stats_team(
 
 
 def reduce_roster_stats_to_team(roster_stats: pd.DataFrame):
-    """ Colalpse a set of player stats to a single team stat"""
+    """ Collapse a set of player stats to a single team stat"""
     summed = roster_stats[constants.keep_keys].sum().to_dict()
     summed['FG%'] = summed['FGM'] / summed['FGA']
     summed['FT%'] = summed['FTM'] / summed['FTA']
