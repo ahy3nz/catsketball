@@ -36,18 +36,34 @@ def get_avg_stats_player(player: Player):
     Stats prefaced with '00' are actual, observed stats
     Stats prefaced with '10' are predicted stats for that season
     
+    Lots of different ways to estimate stats for players,
+    naively average the different estimates to get the
+    average stats for a particular player
     """
     # Ignore player if on IR
     # If a player is injured but NOT on IR, still factor his stats
-    if player.lineupSlot=="IR":
+    stat_estimates = []
+    if player.lineupSlot == "IR":
         return defaultdict(int)
-    elif '002021' in player.stats:
-        stats_to_add = player.stats['002021']['avg']
-    elif '102022' in player.stats:
-        stats_to_add = player.stats['102022']['avg']
-    else:
+    if '002021' in player.stats:
+        stat_estimates.append(player.stats['002021']['avg'])
+    if '102022' in player.stats:
+        stat_estimates.append(player.stats['102022']['avg'])
+    if '002022' in player.stats:
+        stat_estimates.append(player.stats['002022']['avg'])
+    if len(stat_estimates) == 0:
         warnings.warn(f"Can't find stats for player {player}")
         return defaultdict(int)
+    stats_to_add = (
+        pd.DataFrame(
+            stat_estimates,
+            index=range(len(stat_estimates))
+        )
+        .mean()
+        .to_dict()
+    )
+    stats_to_add['FG%'] = stats_to_add['FGM'] / stats_to_add['FGA']
+    stats_to_add['FT%'] = stats_to_add['FTM'] / stats_to_add['FTA']
     return stats_to_add
 
 
