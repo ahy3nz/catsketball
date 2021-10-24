@@ -2,6 +2,7 @@ import datetime
 from espn_api.basketball import League
 import pandas as pd
 import streamlit as st
+st.set_page_config(layout="wide")
 
 import constants, espn_stats, styling
 
@@ -39,30 +40,31 @@ if (
     )
     team_mapping = espn_stats.build_team_mapping(league)
 
-    with st.expander("League-wide comparisons"):
+    with st.expander("League summary"):
+        st.text("Sum of each player's per-game average")
         league_summary = espn_stats.summarize_league_per_team(league)
-        #st.dataframe(data=league_summary)
         st.markdown(
             styling.style_categories(league_summary).to_html(),
             unsafe_allow_html=True
         )
-        st.caption("Ignoring injured players")
+        st.caption("Ignoring players on IR")
+        st.caption("Including day-to-day/questionable players")
         
-    with st.expander("H2H comparisons"):
+    with st.expander("Weekly comparisons"):
         h2h_form = st.form(key='h2h_form')
         with h2h_form:
             team_selector = st.multiselect(
-                "Choose 2 Teams: ",
+                "Choose teams: ",
                 options=[a.team_name for a in league.teams]
             )
             date_selector = st.date_input(
-                "Select date range (from start date, up to (and not including) end date): ",
+                "Select date range, including start date, up to (and not including) end date: ",
                 value=(datetime.date.today(), datetime.date.today())
             )
             h2h_form_submit = st.form_submit_button("Submit search")
             
         if h2h_form_submit:
-            team_1, team_2 = team_selector[:2]
+            all_teams = team_selector
             start_date, end_date = date_selector
             start_date = datetime.datetime.combine(
                 start_date, datetime.datetime.min.time()
@@ -70,23 +72,20 @@ if (
             end_date = datetime.datetime.combine(
                 end_date, datetime.datetime.min.time()
             )
-            team_1_stats = espn_stats.get_weekly_stats_team(
-                team_mapping[team_1], start_date, end_date
-            )
-            team_1_stats['Name'] = team_1
-            
-            team_2_stats = espn_stats.get_weekly_stats_team(
-                team_mapping[team_2], start_date, end_date
-            )
-            team_2_stats['Name'] = team_2
-            
+            all_team_stats = []
+            for team in all_teams:
+                team_i = espn_stats.get_weekly_stats_team(
+                    team_mapping[team], start_date, end_date
+                )
+                team_i['Name'] = team
+                all_team_stats.append(team_i)
             h2h_comparison = (
-                pd.DataFrame([team_1_stats, team_2_stats])
+                pd.DataFrame(all_team_stats)
                 .set_index("Name")
             )
-            #st.dataframe(styling.style_categories(h2h_comparison))
             st.markdown(
                 styling.style_categories(h2h_comparison).to_html(),
                 unsafe_allow_html=True
             )
-            st.caption("Neglecting injured players")
+            st.caption("Ignoring players on IR")
+            st.caption("Excluding day-to-day/questionable players")
