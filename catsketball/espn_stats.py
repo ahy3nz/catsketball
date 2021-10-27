@@ -28,10 +28,11 @@ def get_num_games(
             str(team_id)
         ].sum(skipna=True)
     )
+
     return num_games
 
 
-def get_avg_stats_player(player: Player):
+def get_avg_stats_player(player: Player, include_dtdq=False):
     """ Pull stats for partiucular player
     Stats prefaced with '00' are actual, observed stats
     Stats prefaced with '10' are predicted stats for that season
@@ -43,7 +44,11 @@ def get_avg_stats_player(player: Player):
     # Ignore player if on IR
     # If a player is injured but NOT on IR, still factor his stats
     stat_estimates = []
-    if player.lineupSlot == "IR":
+    if (
+        (player.lineupSlot == "IR") or 
+        (_is_out(player)) or 
+        (_is_dtdq(player) and not include_dtdq)
+    ):
         return defaultdict(int)
     if '002021' in player.stats:
         stat_estimates.append(player.stats['002021']['avg'])
@@ -72,7 +77,8 @@ def get_weekly_stats_player(
     start_date: datetime.datetime, 
     end_date: datetime.datetime, 
     team_id_name_mapping: Optional[dict] = None, 
-    schedule: Optional[pd.DataFrame] = None
+    schedule: Optional[pd.DataFrame] = None,
+    include_dtdq=False,
 ):
     """ Given a time range, predict categories"""
     if team_id_name_mapping is None:
@@ -82,9 +88,13 @@ def get_weekly_stats_player(
         
     team_id = team_id_name_mapping[player.proTeam.upper()]
     num_games = get_num_games(schedule, team_id, start_date, end_date)
-    player_avg_stats = get_avg_stats_player(player)
+    player_avg_stats = get_avg_stats_player(player, include_dtdq=include_dtdq)
     # Ignore player if injured or IR
-    if player.injured or (player.lineupSlot=="IR"):
+    if (
+        (player.lineupSlot=="IR") or
+        (_is_out(player)) or
+        (_is_dtdq(player) and not include_dtdq)
+    ):
         relevant_stats = {
             k: 0
             for k in constants.keep_keys
@@ -108,12 +118,14 @@ def get_weekly_stats_player(
     return relevant_stats
 
 
-def get_avg_stats_roster(team: Team):
+def get_avg_stats_roster(team: Team, include_dtdq=False):
     """ For a fantasy team, get per-game-averaged stats 
     for each player """
     all_records = []
     for player in team.roster:
-        player_stats = get_avg_stats_player(player)
+        player_stats = get_avg_stats_player(
+            player, include_dtdq=include_dtdq
+        )
         player_stats['Name'] = player.name
         all_records.append(player_stats)
         
@@ -127,13 +139,14 @@ def get_avg_stats_roster(team: Team):
 def get_weekly_stats_roster(
     team: Team, 
     start_date: datetime.datetime, 
-    end_date: datetime.datetime
+    end_date: datetime.datetime,
+    include_dtdq=False
 ):
     """ For a fantasy team, project categories for roster """
     all_records = []
     for player in team.roster:
         entry = get_weekly_stats_player(
-            player, start_date, end_date
+            player, start_date, end_date, include_dtdq=include_dtdq
         )
         entry['Name'] = player.name
         all_records.append(entry)
@@ -141,10 +154,10 @@ def get_weekly_stats_roster(
     return pd.DataFrame(all_records).set_index("Name").fillna(0.0)
 
 
-def get_avg_stats_team(team: Team):
+def get_avg_stats_team(team: Team, include_dtdq=False):
     """ Get average stats for an entire team"""
     to_return = reduce_roster_stats_to_team(
-        get_avg_stats_roster(team)
+        get_avg_stats_roster(team, include_dtdq=include_dtdq)
     )
     to_return['Name'] = team.team_name
     
@@ -154,11 +167,14 @@ def get_avg_stats_team(team: Team):
 def get_weekly_stats_team(
     team: Team,
     start_date: datetime.datetime, 
-    end_date: datetime.datetime
+    end_date: datetime.datetime,
+    include_dtdq=False
 ):
     """ Get weekly stats for an entire team"""
     to_return = reduce_roster_stats_to_team(
-        get_weekly_stats_roster(team, start_date, end_date)
+        get_weekly_stats_roster(
+            team, start_date, end_date, include_dtdq=include_dtdq
+        )
     )
     to_return['Name'] = team.team_name
     
@@ -174,17 +190,31 @@ def reduce_roster_stats_to_team(roster_stats: pd.DataFrame):
     return summed
     
     
-def summarize_league_per_team(league):
+def summarize_league_per_team(league: League, include_dtdq=False):
     """ Give stats per team in the league"""
     all_records = []
     for team in league.teams:
-        record = get_avg_stats_team(team)
+        record = get_avg_stats_team(team, include_dtdq=include_dtdq)
         record['Name'] = team.team_name
         all_records.append(record)
     return pd.DataFrame(all_records).set_index("Name").fillna(0.0)
 
 
-def build_team_mapping(league):
+def build_team_mapping(league: League):
+    """ Relate team names to espn_api Team objects """
     return {
         team.team_name: team for team in league.teams
     }
+
+
+def _is_dtdq(player: Player):
+    """ Is the player's status DTD or Q? """
+    return (
+        (player.injuryStatus == 'DAY_TO_DAY') or
+        (player.injuryStatus == 'QUESTIONABLE')
+    )
+
+def _is_out(player: Player):
+    """ Is the player's status O? """
+    return (player.injuryStatus == 'OUT')
+

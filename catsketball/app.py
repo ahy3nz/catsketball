@@ -2,7 +2,9 @@ import datetime
 from espn_api.basketball import League
 import pandas as pd
 import streamlit as st
-st.set_page_config(layout="wide")
+st.set_page_config(
+    page_title='Catsketball', page_icon=':basketball:', layout="wide"
+)
 
 import constants, espn_stats, styling
 
@@ -40,42 +42,50 @@ if (
     )
     team_mapping = espn_stats.build_team_mapping(league)
 
+    include_dtdq = st.checkbox(
+        "Include day-to-day/questionable players " +
+        "(IR/out players are always ignored)"
+    )
+    #st.header("League summary")
     with st.expander("League summary"):
         st.text("Sum of each player's per-game average")
-        league_summary = espn_stats.summarize_league_per_team(league)
+        league_summary = espn_stats.summarize_league_per_team(
+            league, include_dtdq=include_dtdq
+        )
         st.markdown(
             styling.style_categories(league_summary).to_html(),
             unsafe_allow_html=True
         )
         st.caption("Ignoring players on IR")
-        st.caption("Including day-to-day/questionable players")
         
+    #st.header("Weekly comparisons")
     with st.expander("Weekly comparisons"):
-        h2h_form = st.form(key='h2h_form')
-        with h2h_form:
-            team_selector = st.multiselect(
-                "Choose teams: ",
-                options=[a.team_name for a in league.teams]
-            )
-            date_selector = st.date_input(
-                "Select date range, including start date, up to (and not including) end date: ",
-                value=(datetime.date.today(), datetime.date.today())
-            )
-            h2h_form_submit = st.form_submit_button("Submit search")
-            
-        if h2h_form_submit:
-            all_teams = team_selector
+        all_teams = st.multiselect(
+            "Choose teams: ",
+            options=[a.team_name for a in league.teams]
+        )
+        date_selector = st.date_input(
+            "Select date range, including start date, up to (and not including) end date: ",
+            value=(datetime.date.today(), datetime.date.today())
+        )
+        
+        if len(date_selector) == 2:
             start_date, end_date = date_selector
-            start_date = datetime.datetime.combine(
-                start_date, datetime.datetime.min.time()
-            )
-            end_date = datetime.datetime.combine(
-                end_date, datetime.datetime.min.time()
-            )
+        else:
+            st.error("Choose two valid dates")
+            st.stop()
+        start_date = datetime.datetime.combine(
+            start_date, datetime.datetime.min.time()
+        )
+        end_date = datetime.datetime.combine(
+            end_date, datetime.datetime.min.time()
+        )
+        if (len(all_teams) > 0) and (start_date != end_date):
             all_team_stats = []
             for team in all_teams:
                 team_i = espn_stats.get_weekly_stats_team(
-                    team_mapping[team], start_date, end_date
+                    team_mapping[team], start_date, end_date,
+                    include_dtdq=include_dtdq
                 )
                 team_i['Name'] = team
                 all_team_stats.append(team_i)
@@ -87,5 +97,4 @@ if (
                 styling.style_categories(h2h_comparison).to_html(),
                 unsafe_allow_html=True
             )
-            st.caption("Ignoring players on IR")
-            st.caption("Excluding day-to-day/questionable players")
+        st.caption("Ignoring players on IR")
