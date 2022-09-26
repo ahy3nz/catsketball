@@ -1,6 +1,7 @@
 from collections import defaultdict
 import datetime
-from typing import Optional
+import json
+from typing import List, Optional
 import pandas as pd
 import warnings
 from espn_api.basketball import Player, League, Team
@@ -218,3 +219,69 @@ def _is_out(player: Player):
     """ Is the player's status O? """
     return (player.injuryStatus == 'OUT')
 
+
+def summarize_league_draft(league: League, draft_rosters: dict, include_dtdq=False):
+    """ Given a list of player IDs from a draft, summarize stats per team """
+    all_records = []
+    for team_name, player_id_list in draft_rosters.items():
+        record = get_avg_stats_playerlist(player_id_list, include_dtdq=include_dtdq)
+        record['Name'] = team_name
+        all_records.append(record)
+    return pd.DataFrame(all_records).set_index("Name").fillna(0.0)
+
+def get_avg_stats_playerlist(player_id_list: List, include_dtdq=False):
+    """ Get average stats for a list of players """
+    to_return = reduce_roster_stats_to_team(
+        get_avg_stats_playerlist(player_id_list, include_dtdq=include_dtdq)
+    )
+
+    return to_return
+
+def get_avg_stats_playerlist(player_id_list: List, include_dtdq=False):
+    """ For a list of players, get per-game-averaged stats """
+    all_records = []
+    for player_id in player_id_list:
+        player_stats = get_avg_stats_player(
+            player, include_dtdq=include_dtdq
+        )
+        all_records.append(player_stats)
+
+    return pd.DataFrame(all_records).fillna(0.0)
+
+
+def pull_all_players(
+    league, 
+    week: int=None, 
+    size: int=1000, 
+    position: str=None, 
+    position_id: int=None
+) -> Dict[int, Player]:
+    '''Returns a List of Players for a Given Week\n
+    Should only be used with most recent season
+    
+    Adapted from https://github.com/cwendt94/espn-api/blob/1dda8f4c162fb80c1027987b1a5018b33db41cb6/espn_api/basketball/league.py#L115
+    '''
+
+    if league.year < 2019:
+        raise Exception('Cant use free agents before 2019')
+    if not week:
+        week = league.current_week
+
+    params = {
+        'view': 'kona_player_info',
+        'scoringPeriodId': week,
+    }
+    filters = {
+        "players":{
+            "filterStatus":{"value":["ALL"]},
+            "limit":size,
+#            "sortPercOwned":{"sortPriority":1,"sortAsc":False},
+            #"sortDraftRanks":{"sortPriority":100,"sortAsc":True,"value":"STANDARD"}
+        }
+    }
+    headers = {'x-fantasy-filter': json.dumps(filters)}
+
+    data = league.espn_request.league_get(params=params, headers=headers)
+    players = data['players']
+
+    return {player.Id: Player(player, league.year) for player in players}
