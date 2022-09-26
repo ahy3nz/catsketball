@@ -44,13 +44,14 @@ if (
 
     include_dtdq = st.checkbox(
         "Include day-to-day/questionable players " +
-        "(IR/out players are always ignored)"
+        "(IR players are always ignored)"
     )
-    #st.header("League summary")
+    include_o = st.checkbox("Include out players")
+
     with st.expander("League summary"):
         st.text("Sum of each player's per-game average")
         league_summary = espn_stats.summarize_league_per_team(
-            league, include_dtdq=include_dtdq
+            league, include_dtdq=include_dtdq, include_o=include_o
         )
         st.markdown(
             styling.style_categories(league_summary).to_html(),
@@ -85,7 +86,8 @@ if (
             for team in all_teams:
                 team_i = espn_stats.get_weekly_stats_team(
                     team_mapping[team], start_date, end_date,
-                    include_dtdq=include_dtdq
+                    include_dtdq=include_dtdq,
+                    include_o=include_o
                 )
                 team_i['Name'] = team
                 all_team_stats.append(team_i)
