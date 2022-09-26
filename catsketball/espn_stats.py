@@ -1,7 +1,9 @@
 from collections import defaultdict
 import datetime
-from typing import Optional
+import json
+from typing import Dict, List, Optional
 import pandas as pd
+import streamlit as st
 import warnings
 from espn_api.basketball import Player, League, Team
 
@@ -118,11 +120,11 @@ def get_weekly_stats_player(
     return relevant_stats
 
 
-def get_avg_stats_roster(team: Team, include_dtdq=False):
+def get_avg_stats_roster(team_roster: List[Player], include_dtdq=False):
     """ For a fantasy team, get per-game-averaged stats 
     for each player """
     all_records = []
-    for player in team.roster:
+    for player in team_roster:
         player_stats = get_avg_stats_player(
             player, include_dtdq=include_dtdq
         )
@@ -157,7 +159,7 @@ def get_weekly_stats_roster(
 def get_avg_stats_team(team: Team, include_dtdq=False):
     """ Get average stats for an entire team"""
     to_return = reduce_roster_stats_to_team(
-        get_avg_stats_roster(team, include_dtdq=include_dtdq)
+        get_avg_stats_roster(team.roster, include_dtdq=include_dtdq)
     )
     to_return['Name'] = team.team_name
     
@@ -217,4 +219,67 @@ def _is_dtdq(player: Player):
 def _is_out(player: Player):
     """ Is the player's status O? """
     return (player.injuryStatus == 'OUT')
+
+
+def summarize_league_draft(
+        league: League, 
+        draft_rosters: Dict[str, List[str]], 
+        include_dtdq=False
+):
+    """ Given a list of player IDs from a draft, summarize stats per team """
+    all_records = []
+    all_players = pull_all_players(league)
+    for team_name, player_name_list in draft_rosters.items():
+        list_of_players = [
+            all_players[player_name] for player_name in player_name_list
+        ]
+        record = reduce_roster_stats_to_team(
+            get_avg_stats_roster(list_of_players, include_dtdq=include_dtdq)
+        )
+        record['Name'] = team_name
+        all_records.append(record)
+
+    return pd.DataFrame(all_records).set_index("Name").fillna(0.0)
+
+
+@st.cache(persist=True)
+def pull_all_players(
+    league, 
+    week: int=None, 
+    size: int=400, 
+) -> Dict[str, Player]:
+    '''Returns a mapping of player names to Player objects for a Given Week\n
+    Should only be used with most recent season
+    
+    Adapted from https://github.com/cwendt94/espn-api/blob/1dda8f4c162fb80c1027987b1a5018b33db41cb6/espn_api/basketball/league.py#L115
+    '''
+
+    if league.year < 2019:
+        raise Exception('Cant use free agents before 2019')
+    if not week:
+        week = league.current_week
+
+    params = {
+        'view': 'kona_player_info',
+        'scoringPeriodId': week,
+    }
+    filters = {
+        "players":{
+            "limit":size,
+            "sortPercOwned":{"sortPriority":1,"sortAsc":False},
+            "sortDraftRanks":{
+                "sortPriority":100,"sortAsc":True,"value":"STANDARD"
+            }
+        }
+    }
+    headers = {'x-fantasy-filter': json.dumps(filters)}
+
+    data = league.espn_request.league_get(params=params, headers=headers)
+    players = data['players']
+
+    return {
+        payload['player']['fullName']: 
+        Player(payload, league.year) 
+        for payload in players
+    }
 
