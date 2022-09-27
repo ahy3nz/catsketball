@@ -233,7 +233,8 @@ def _is_out(player: Player):
 def summarize_league_draft(
     league: League, 
     draft_rosters: Dict[str, List[str]], 
-    include_dtdq=False
+    include_dtdq=False,
+    include_o=False
 ):
     """ Given a list of player IDs from a draft, summarize stats per team """
     all_records = []
@@ -243,7 +244,11 @@ def summarize_league_draft(
             all_players[player_name] for player_name in player_name_list
         ]
         record = reduce_roster_stats_to_team(
-            get_avg_stats_roster(list_of_players, include_dtdq=include_dtdq)
+            get_avg_stats_roster(
+                list_of_players, 
+                include_dtdq=include_dtdq, 
+                include_o=include_o
+            )
         )
         record['Name'] = team_name
         all_records.append(record)
