@@ -222,9 +222,9 @@ def _is_out(player: Player):
 
 
 def summarize_league_draft(
-        league: League, 
-        draft_rosters: Dict[str, List[str]], 
-        include_dtdq=False
+    league: League, 
+    draft_rosters: Dict[str, List[str]], 
+    include_dtdq=False
 ):
     """ Given a list of player IDs from a draft, summarize stats per team """
     all_records = []
