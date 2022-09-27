@@ -121,7 +121,11 @@ def get_weekly_stats_player(
     return relevant_stats
 
 
-def get_avg_stats_roster(team: Team, include_dtdq=False, include_o=False):
+def get_avg_stats_roster(
+    team_roster: List[Player], 
+    include_dtdq=False, 
+    include_o=False
+):
     """ For a fantasy team, get per-game-averaged stats 
     for each player """
     all_records = []
@@ -162,7 +166,11 @@ def get_weekly_stats_roster(
 def get_avg_stats_team(team: Team, include_dtdq=False, include_o=False):
     """ Get average stats for an entire team"""
     to_return = reduce_roster_stats_to_team(
-        get_avg_stats_roster(team, include_dtdq=include_dtdq, include_o=include_o)
+        get_avg_stats_roster(
+            team.roster, 
+            include_dtdq=include_dtdq, 
+            include_o=include_o
+        )
     )
     to_return['Name'] = team.team_name
     
