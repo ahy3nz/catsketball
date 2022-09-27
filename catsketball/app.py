@@ -44,13 +44,14 @@ if (
 
     include_dtdq = st.checkbox(
         "Include day-to-day/questionable players " +
-        "(IR/out players are always ignored)"
+        "(IR players are always ignored)"
     )
-    #st.header("League summary")
+    include_o = st.checkbox("Include out players")
+
     with st.expander("League summary"):
         st.text("Sum of each player's per-game average")
         league_summary = espn_stats.summarize_league_per_team(
-            league, include_dtdq=include_dtdq
+            league, include_dtdq=include_dtdq, include_o=include_o
         )
         st.markdown(
             styling.style_categories(league_summary).to_html(),
@@ -58,7 +59,7 @@ if (
         )
         st.caption("Ignoring players on IR")
         
-    #st.header("Weekly comparisons")
+
     with st.expander("Weekly comparisons"):
         all_teams = st.multiselect(
             "Choose teams: ",
@@ -85,7 +86,8 @@ if (
             for team in all_teams:
                 team_i = espn_stats.get_weekly_stats_team(
                     team_mapping[team], start_date, end_date,
-                    include_dtdq=include_dtdq
+                    include_dtdq=include_dtdq,
+                    include_o=include_o
                 )
                 team_i['Name'] = team
                 all_team_stats.append(team_i)
@@ -98,3 +100,29 @@ if (
                 unsafe_allow_html=True
             )
         st.caption("Ignoring players on IR")
+
+
+    with st.expander("Team builder"):
+        all_players = espn_stats.pull_all_players(league)
+        player_names = list(all_players.keys())
+
+        n_cols = 3
+        all_columns = st.columns(n_cols)
+
+        team_rosters = {} # Map team name to list of player names
+        for i, team in enumerate(league.teams):
+            col_selector = (i % 3)
+            team_rosters[team.team_name] = (
+                all_columns[col_selector].multiselect(
+                    f"{team.team_name}", options=player_names
+                )
+            )
+        draft_summary = espn_stats.summarize_league_draft(
+            league, team_rosters, include_dtdq=include_dtdq,
+            include_o=include_o
+        )
+
+        st.markdown(
+            styling.style_categories(draft_summary).to_html(),
+            unsafe_allow_html=True
+        )
