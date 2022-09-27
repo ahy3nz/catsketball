@@ -244,7 +244,7 @@ def summarize_league_draft(
     include_dtdq=False,
     include_o=False
 ):
-    """ Given a list of player IDs from a draft, summarize stats per team """
+    """ Given a list of player names from a draft, summarize stats per team """
     all_records = []
     all_players = pull_all_players(league)
     for team_name, player_name_list in draft_rosters.items():
