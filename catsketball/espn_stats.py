@@ -41,7 +41,10 @@ def get_avg_stats_player(player: Player, include_dtdq=False, include_o=False):
     
     Lots of different ways to estimate stats for players,
     naively average the different estimates to get the
-    average stats for a particular player
+    average stats for a particular player.
+    
+    This function is the most error-prone as it depends on how ESPN
+    choose to organize its player stats each season
     """
     # Ignore player if on IR
     # If a player is injured but NOT on IR, still factor his stats
@@ -52,12 +55,18 @@ def get_avg_stats_player(player: Player, include_dtdq=False, include_o=False):
         (_is_dtdq(player) and not include_dtdq)
     ):
         return defaultdict(int)
-    if '002021' in player.stats:
-        stat_estimates.append(player.stats['002021']['avg'])
-    if '102022' in player.stats:
-        stat_estimates.append(player.stats['102022']['avg'])
-    if '002022' in player.stats:
-        stat_estimates.append(player.stats['002022']['avg'])
+    # if '002021' in player.stats:
+    #     stat_estimates.append(player.stats['002021']['avg'])
+    # if '102022' in player.stats:
+    #     stat_estimates.append(player.stats['102022']['avg'])
+    # if '002022' in player.stats:
+    #     stat_estimates.append(player.stats['002022']['avg'])
+    if '2022' in player.stats:
+        if 'avg' in player.stats['2022']:
+            stat_estimates.append(player.stats['2022']['avg'])
+    if '2022_projected' in player.stats:
+        if 'avg' in player.stats['2022_projected']:
+            stat_estimates.append(player.stats['2022_projected']['avg'])
     if len(stat_estimates) == 0:
         warnings.warn(f"Can't find stats for player {player}")
         return defaultdict(int)
@@ -69,8 +78,15 @@ def get_avg_stats_player(player: Player, include_dtdq=False, include_o=False):
         .mean()
         .to_dict()
     )
-    stats_to_add['FG%'] = stats_to_add['FGM'] / stats_to_add['FGA']
-    stats_to_add['FT%'] = stats_to_add['FTM'] / stats_to_add['FTA']
+    if stats_to_add['FGA'] == 0:
+        stats_to_add['FG%'] = 0
+    else:
+        stats_to_add['FG%'] = stats_to_add['FGM'] / stats_to_add['FGA']
+        
+    if stats_to_add['FTA'] == 0:
+        stats_to_add['FT%'] = 0 
+    else:
+        stats_to_add['FT%'] = stats_to_add['FTM'] / stats_to_add['FTA']
     return stats_to_add
 
 
@@ -246,40 +262,35 @@ def summarize_league_draft(
 ):
     """ Given a list of player names from a draft, summarize stats per team """
     all_records = []
-    all_players = pull_all_players(league)
+    all_player_stats = pull_all_players(league)
     for team_name, player_name_list in draft_rosters.items():
-        list_of_players = [
-            all_players[player_name] for player_name in player_name_list
-        ]
-        record = reduce_roster_stats_to_team(
-            get_avg_stats_roster(
-                list_of_players, 
-                include_dtdq=include_dtdq, 
-                include_o=include_o
-            )
-        )
+        if len(player_name_list) > 0:
+            record = reduce_roster_stats_to_team(all_player_stats.loc[player_name_list])
+        else:
+            record = {key: 0.0 for key in constants.keep_keys}
+            record['FG%'] = 0.0
+            record['FT%'] = 0.0
         record['Name'] = team_name
         all_records.append(record)
-
     return pd.DataFrame(all_records).set_index("Name").fillna(0.0)
 
 
-@st.cache(persist=True)
+@st.experimental_memo
 def pull_all_players(
-    league, 
+    _league, 
     week: int=None, 
     size: int=400, 
-) -> Dict[str, Player]:
-    '''Returns a mapping of player names to Player objects for a Given Week\n
-    Should only be used with most recent season
+) -> pd.DataFrame:
+    '''Returns a dataframe of all players and associated stats.
+    By default, will include stats of DTD/Q/O players
     
     Adapted from https://github.com/cwendt94/espn-api/blob/1dda8f4c162fb80c1027987b1a5018b33db41cb6/espn_api/basketball/league.py#L115
     '''
 
-    if league.year < 2019:
+    if _league.year < 2019:
         raise Exception('Cant use free agents before 2019')
     if not week:
-        week = league.current_week
+        week = _league.current_week
 
     params = {
         'view': 'kona_player_info',
@@ -287,21 +298,19 @@ def pull_all_players(
     }
     filters = {
         "players":{
-            "limit":size,
-            "sortPercOwned":{"sortPriority":1,"sortAsc":False},
-            "sortDraftRanks":{
-                "sortPriority":100,"sortAsc":True,"value":"STANDARD"
+            "limit": size,
+            "sortPercOwned": {"sortPriority": 1, "sortAsc": False},
+            "sortDraftRanks": {
+                "sortPriority": 100, "sortAsc": True, "value": "STANDARD"
             }
         }
     }
     headers = {'x-fantasy-filter': json.dumps(filters)}
 
-    data = league.espn_request.league_get(params=params, headers=headers)
+    data = _league.espn_request.league_get(params=params, headers=headers)
     players = data['players']
-
-    return {
-        payload['player']['fullName']: 
-        Player(payload, league.year) 
-        for payload in players
-    }
-
+    all_players = [Player(payload, _league.year) for payload in players]
+    
+    all_players_stats = get_avg_stats_roster(all_players, include_dtdq=True, include_o=True)
+    
+    return all_players_stats
