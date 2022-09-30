@@ -9,3 +9,17 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+    commit-message:
+      prefix: "pip prod"
+      include: "scope"
+    allow:
+      - dependency-name: "espn_api"
+        dependency-type: "all"
+      - dependency-name: "streamlit"
+        dependency-type: "all"
+      - dependency-name: "pandas"
+        dependency-type: "all"
+      - dependency-name: "protobuf"
+        dependency-type: "all"
+      - dependency-name: "pyyaml"
+        dependency-type: "all"
