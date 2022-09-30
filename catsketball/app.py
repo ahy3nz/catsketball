@@ -104,7 +104,7 @@ if (
 
     with st.expander("Team builder"):
         all_players = espn_stats.pull_all_players(league)
-        player_names = list(all_players.keys())
+        player_names = list(all_players.index)
 
         n_cols = 3
         all_columns = st.columns(n_cols)
