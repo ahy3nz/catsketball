@@ -38,7 +38,7 @@ if (
         league_id=st.session_state['league_id'],
         espn_s2=st.session_state['espn_s2'],
         swid=st.session_state['swid'],
-        year=2022
+        year=2023
     )
     team_mapping = espn_stats.build_team_mapping(league)
 
