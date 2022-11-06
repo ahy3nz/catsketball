@@ -61,12 +61,12 @@ def get_avg_stats_player(player: Player, include_dtdq=False, include_o=False):
     #     stat_estimates.append(player.stats['102022']['avg'])
     # if '002022' in player.stats:
     #     stat_estimates.append(player.stats['002022']['avg'])
-    if '2022' in player.stats:
-        if 'avg' in player.stats['2022']:
-            stat_estimates.append(player.stats['2022']['avg'])
-    if '2022_projected' in player.stats:
-        if 'avg' in player.stats['2022_projected']:
-            stat_estimates.append(player.stats['2022_projected']['avg'])
+    if '2023' in player.stats:
+        if 'avg' in player.stats['2023']:
+            stat_estimates.append(player.stats['2023']['avg'])
+    if '2023_projected' in player.stats:
+        if 'avg' in player.stats['2023_projected']:
+            stat_estimates.append(player.stats['2023_projected']['avg'])
     if len(stat_estimates) == 0:
         warnings.warn(f"Can't find stats for player {player}")
         return defaultdict(int)
