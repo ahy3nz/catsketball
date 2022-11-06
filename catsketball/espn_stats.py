@@ -55,18 +55,15 @@ def get_avg_stats_player(player: Player, include_dtdq=False, include_o=False):
         (_is_dtdq(player) and not include_dtdq)
     ):
         return defaultdict(int)
-    # if '002021' in player.stats:
-    #     stat_estimates.append(player.stats['002021']['avg'])
-    # if '102022' in player.stats:
-    #     stat_estimates.append(player.stats['102022']['avg'])
-    # if '002022' in player.stats:
-    #     stat_estimates.append(player.stats['002022']['avg'])
     if '2023' in player.stats:
         if 'avg' in player.stats['2023']:
             stat_estimates.append(player.stats['2023']['avg'])
     if '2023_projected' in player.stats:
         if 'avg' in player.stats['2023_projected']:
             stat_estimates.append(player.stats['2023_projected']['avg'])
+    if '2023_last_30' in player.stats:
+        if 'avg' in player.stats['2023_last_30']:
+            stat_estimates.append(player.stats['2023_last_30']['avg'])
     if len(stat_estimates) == 0:
         warnings.warn(f"Can't find stats for player {player}")
         return defaultdict(int)
@@ -78,15 +75,17 @@ def get_avg_stats_player(player: Player, include_dtdq=False, include_o=False):
         .mean()
         .to_dict()
     )
-    if stats_to_add['FGA'] == 0:
-        stats_to_add['FG%'] = 0
-    else:
-        stats_to_add['FG%'] = stats_to_add['FGM'] / stats_to_add['FGA']
+    if 'FG%' not in stats_to_add:
+        if stats_to_add['FGA'] == 0:
+            stats_to_add['FG%'] = 0
+        else:
+            stats_to_add['FG%'] = stats_to_add['FGM'] / stats_to_add['FGA']
         
-    if stats_to_add['FTA'] == 0:
-        stats_to_add['FT%'] = 0 
-    else:
-        stats_to_add['FT%'] = stats_to_add['FTM'] / stats_to_add['FTA']
+    if 'FT%' not in stats_to_add:
+        if stats_to_add['FTA'] == 0:
+            stats_to_add['FT%'] = 0 
+        else:
+            stats_to_add['FT%'] = stats_to_add['FTM'] / stats_to_add['FTA']
     return stats_to_add
 
 
