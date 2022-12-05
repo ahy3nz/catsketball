@@ -159,7 +159,7 @@ smmap==5.0.0
     # via gitdb
 stack-data==0.5.1
     # via ipython
-streamlit==1.15.1
+streamlit==1.15.2
     # via -r requirements.in
 toml==0.10.2
     # via streamlit
