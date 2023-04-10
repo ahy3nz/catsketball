@@ -151,15 +151,13 @@ requests==2.28.1
     #   streamlit
 rich==12.5.1
     # via streamlit
-semver==2.13.0
-    # via streamlit
 six==1.16.0
     # via python-dateutil
 smmap==5.0.0
     # via gitdb
 stack-data==0.5.1
     # via ipython
-streamlit==1.20.0
+streamlit==1.21.0
     # via -r requirements.in
 toml==0.10.2
     # via streamlit
