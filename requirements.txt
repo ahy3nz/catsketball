@@ -60,7 +60,9 @@ pandas==2.0.3
     #   streamlit
 pillow==9.2.0
     # via streamlit
-protobuf==3.20.3
+prompt-toolkit==3.0.31
+    # via ipython
+protobuf==4.23.4
     # via streamlit
 pyarrow==9.0.0
     # via streamlit
@@ -82,7 +84,7 @@ pytz==2022.2.1
     # via pandas
 pytz-deprecation-shim==0.1.0.post0
     # via tzlocal
-pyyaml==6.0
+pyyaml==6.0.1
     # via -r requirements.in
 requests==2.28.1
     # via
