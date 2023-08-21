@@ -60,9 +60,7 @@ pandas==2.0.3
     #   streamlit
 pillow==9.2.0
     # via streamlit
-prompt-toolkit==3.0.31
-    # via ipython
-protobuf==4.23.4
+protobuf==4.24.1
     # via streamlit
 pyarrow==9.0.0
     # via streamlit
