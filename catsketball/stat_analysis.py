@@ -73,7 +73,7 @@ def fit_standardizers(
     table: pa.Table,
     standardizers: Dict[str, StandardScaler]
 ) -> None:
-    """ Fit standardizers to players who have been drafted"""
+    """ Fit standardizers to players who not been drafted"""
     for stat, standardizer in standardizers.items():
         standardizer.fit(
             table
