@@ -140,7 +140,17 @@ with player_tab:
     if "standardizers" not in st.session_state:
         st.session_state.standardizers = stat_analysis.init_standardizers()
     if "stdzd_table" not in st.session_state:
-        st.session_state.stdzd_table = None
+        stat_analysis.fit_standardizers(
+            st.session_state.projections_modified, 
+            st.session_state.standardizers
+        )
+        
+        stdzd_table = stat_analysis.standardize(
+            st.session_state.projections_modified, 
+            st.session_state.standardizers
+        )
+        
+        st.session_state.stdzd_table = stdzd_table.to_pandas()
         
     st.header("Stat projections")
     st.caption("Modify the `drafted_by` column to update subsequent tables")
@@ -156,7 +166,7 @@ with player_tab:
         key="drafting_changes"
     )
     st.header("Relative stats")
-    st.caption("Z-scores compared to players who have been drafted")
+    st.caption("Z-scores compared to players who are still available")
     if st.session_state.stdzd_table is not None:
         st.dataframe(
             st.session_state.stdzd_table[lambda df_: df_["drafted_by"] == 0]
