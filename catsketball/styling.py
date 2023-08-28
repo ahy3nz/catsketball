@@ -37,13 +37,19 @@ def build_tooltips(df: pd.DataFrame):
     return tooltips
     
     
-def style_categories(df: pd.DataFrame):
-    df_to_show = df.drop(columns=['FGM', 'FGA', 'FTM', 'FTA'])
-    tooltips = build_tooltips(df)
+def style_categories(df: pd.DataFrame, include_tooltips=True):
+    if include_tooltips:
+        df_to_show = df.drop(columns=['FGM', 'FGA', 'FTM', 'FTA'])
+        tooltips = build_tooltips(df)
     
+        return (
+            df_to_show.style
+            .apply(coloring, n_colors=len(df_to_show))
+            .format(precision=2)
+            .set_tooltips(tooltips)
+        )
     return (
-        df_to_show.style
-        .apply(coloring, n_colors=len(df_to_show))
+        df.style
+        .apply(coloring, n_colors=len(df))
         .format(precision=2)
-        .set_tooltips(tooltips)
     )

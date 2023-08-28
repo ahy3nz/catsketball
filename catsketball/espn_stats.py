@@ -274,7 +274,7 @@ def summarize_league_draft(
     return pd.DataFrame(all_records).set_index("Name").fillna(0.0)
 
 
-@st.experimental_memo
+@st.cache_data
 def pull_all_players(
     _league, 
     week: int=None, 
