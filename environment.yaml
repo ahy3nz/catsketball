@@ -8,6 +8,7 @@ dependencies:
     - pip
     - colour
     - pyyaml
+    - scikit-learn
     - scipy
     - pip:
         - espn_api
