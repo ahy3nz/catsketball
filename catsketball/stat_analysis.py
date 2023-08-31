@@ -17,8 +17,11 @@ POSITIONS = ["PG", "SG", "SF", "PF", "C"]
 @st.cache_data
 def load_projections() -> pa.Table:
     df = (
-        csv.read_csv(Path('staticdata/2023hashtagbasketballprojections.csv'))
-        .drop(['TOTAL'])
+        csv.read_csv(
+            Path(__file__).parent / 
+            "staticdata/2023hashtagbasketballprojections.csv"
+        )
+        .drop(["TOTAL"])
     )
     fg_index = df.schema.names.index("FG%")
     ft_index = df.schema.names.index("FT%")
