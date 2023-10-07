@@ -55,15 +55,15 @@ def get_avg_stats_player(player: Player, include_dtdq=False, include_o=False):
         (_is_dtdq(player) and not include_dtdq)
     ):
         return defaultdict(int)
-    if '2023' in player.stats:
-        if 'avg' in player.stats['2023']:
-            stat_estimates.append(player.stats['2023']['avg'])
-    if '2023_projected' in player.stats:
-        if 'avg' in player.stats['2023_projected']:
-            stat_estimates.append(player.stats['2023_projected']['avg'])
-    if '2023_last_30' in player.stats:
-        if 'avg' in player.stats['2023_last_30']:
-            stat_estimates.append(player.stats['2023_last_30']['avg'])
+    if '2024' in player.stats:
+        if 'avg' in player.stats['2024']:
+            stat_estimates.append(player.stats['2024']['avg'])
+    if '2024_projected' in player.stats:
+        if 'avg' in player.stats['2024_projected']:
+            stat_estimates.append(player.stats['2024_projected']['avg'])
+    if '2024_last_30' in player.stats:
+        if 'avg' in player.stats['2024_last_30']:
+            stat_estimates.append(player.stats['2024_last_30']['avg'])
     if len(stat_estimates) == 0:
         warnings.warn(f"Can't find stats for player {player}")
         return defaultdict(int)
@@ -76,13 +76,13 @@ def get_avg_stats_player(player: Player, include_dtdq=False, include_o=False):
         .to_dict()
     )
     if 'FG%' not in stats_to_add:
-        if stats_to_add['FGA'] == 0:
+        if stats_to_add.get('FGA', 0) == 0:
             stats_to_add['FG%'] = 0
         else:
             stats_to_add['FG%'] = stats_to_add['FGM'] / stats_to_add['FGA']
         
     if 'FT%' not in stats_to_add:
-        if stats_to_add['FTA'] == 0:
+        if stats_to_add.get('FTA', 0) == 0:
             stats_to_add['FT%'] = 0 
         else:
             stats_to_add['FT%'] = stats_to_add['FTM'] / stats_to_add['FTA']
@@ -122,7 +122,7 @@ def get_weekly_stats_player(
     
     else:
         relevant_stats = {
-            k: num_games * player_avg_stats[k] 
+            k: num_games * player_avg_stats.get(k, 0)
             for k in constants.keep_keys
         }
         relevant_stats['FG%'] = (
