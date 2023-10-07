@@ -43,7 +43,7 @@ with league_tab:
             league_id=st.session_state['league_id'],
             espn_s2=st.session_state['espn_s2'],
             swid=st.session_state['swid'],
-            year=2023
+            year=2024
         )
         team_mapping = espn_stats.build_team_mapping(league)
 
