@@ -72,8 +72,6 @@ pydeck==0.8.0
     # via streamlit
 pygments==2.15.0
     # via rich
-pympler==1.0.1
-    # via streamlit
 pyparsing==3.0.9
     # via packaging
 pyrsistent==0.18.1
@@ -104,7 +102,7 @@ six==1.16.0
     # via python-dateutil
 smmap==5.0.0
     # via gitdb
-streamlit==1.26.0
+streamlit==1.27.2
     # via -r requirements.in
 tenacity==8.2.2
     # via streamlit
