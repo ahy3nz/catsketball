@@ -57,13 +57,28 @@ def get_avg_stats_player(player: Player, include_dtdq=False, include_o=False):
         return defaultdict(int)
     if '2024' in player.stats:
         if 'avg' in player.stats['2024']:
-            stat_estimates.append(player.stats['2024']['avg'])
+            stat_estimates.append(
+                {
+                    k: player.stats['2024']['avg'].get(k, 0)
+                    for k in contants.keep_keys
+                }
+            )
     if '2024_projected' in player.stats:
         if 'avg' in player.stats['2024_projected']:
-            stat_estimates.append(player.stats['2024_projected']['avg'])
+            stat_estimates.append(
+                {
+                    k: player.stats['2024_projected']['avg'].get(k, 0)
+                    for k in constants.keep_keys
+                }
+            )
     if '2024_last_30' in player.stats:
         if 'avg' in player.stats['2024_last_30']:
-            stat_estimates.append(player.stats['2024_last_30']['avg'])
+            stat_estimates.append(
+                {
+                    k: player.stats['2024_last_30']['avg'].get(k, 0)
+                    for k in constants.keep_keys
+                }
+            )
     if len(stat_estimates) == 0:
         warnings.warn(f"Can't find stats for player {player}")
         return defaultdict(int)
