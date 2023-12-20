@@ -57,7 +57,7 @@ numpy==1.23.3
     #   streamlit
 packaging==21.3
     # via streamlit
-pandas==2.1.3
+pandas==2.1.4
     # via
     #   -r requirements.in
     #   altair
