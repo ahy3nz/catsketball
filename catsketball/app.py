@@ -194,5 +194,5 @@ with player_tab:
                 [lambda df_: df_[pos]==1]
             )
             projections[stat_analysis.STAT_COLS] = projections[stat_analysis.STAT_COLS].apply(zscore)
-            st.dataframe(projections.drop(columns=stat_analysis.POSITIONS))
+            st.dataframe(projections.drop(columns=stat_analysis.POSITIONS), use_container_width=True)
 
