@@ -178,8 +178,7 @@ with player_tab:
         team_comparison = stat_analysis.compare_teams(st.session_state.stdzd_table)
         st.dataframe(styling.style_categories(
             team_comparison.drop(index=[0]), include_tooltips=False,
-            use_container_width=True,
-        ))
+        ), use_container_width=True)
 
     else:
         st.dataframe(None)
