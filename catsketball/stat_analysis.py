@@ -41,7 +41,7 @@ def load_projections() -> pa.Table:
     
     df = (
         df.sort_by("ADP")
-        .select(["PLAYER", "R#", "ADP", "drafted_by", "POS", "TEAM", *STAT_COLS, "MPG", *POSITIONS])
+        .select(["PLAYER", "R#", "ADP", "GP", "drafted_by", "POS", "TEAM", *STAT_COLS, "MPG", *POSITIONS])
     )
     
     return df
