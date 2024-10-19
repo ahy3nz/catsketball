@@ -1,4 +1,5 @@
 import copy
+import requests
 from typing import Any, Dict, Optional
 
 import numpy as np
@@ -11,17 +12,22 @@ from scipy.stats import zscore
 from sklearn.preprocessing import StandardScaler
 import streamlit as st
 
-STAT_COLS = ["FG%", "FT%", "3pm", "PTS", "TREB", "AST", "STL", "BLK", "TO"]
+STAT_COLS = ["FG%", "FT%", "3PM", "PTS", "TREB", "AST", "STL", "BLK", "TO"]
 POSITIONS = ["PG", "SG", "SF", "PF", "C"]
 
 @st.cache_data
 def load_projections() -> pa.Table:
-    df = (
-        csv.read_csv(
-            Path(__file__).parent / 
-            "staticdata/hashtagbballsnapshot.csv"
-        )
-        .drop(["TOTAL"])
+    # df = (
+    #     csv.read_csv(
+    #         Path(__file__).parent / 
+    #         "staticdata/hashtagbballsnapshot.csv"
+    #     )
+    #     .drop(["TOTAL"])
+    # )
+    html_content = requests.get("https://hashtagbasketball.com/fantasy-basketball-projections").content
+    pd_tables = pd.read_html(html_content)
+    df = pa.Table.from_pandas(
+        pd_tables[2][lambda df_: df_["R#"] != "R#"]
     )
     fg_index = df.schema.names.index("FG%")
     ft_index = df.schema.names.index("FT%")
