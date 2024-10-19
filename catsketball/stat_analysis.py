@@ -12,7 +12,7 @@ from scipy.stats import zscore
 from sklearn.preprocessing import StandardScaler
 import streamlit as st
 
-STAT_COLS = ["FG%", "FT%", "3PM", "PTS", "TREB", "AST", "STL", "BLK", "TO"]
+STAT_COLS = ["FG%", "FT%", "3pm", "PTS", "TREB", "AST", "STL", "BLK", "TO"]
 POSITIONS = ["PG", "SG", "SF", "PF", "C"]
 
 @st.cache_data
