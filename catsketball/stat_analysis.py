@@ -25,10 +25,7 @@ def load_projections() -> pa.Table:
     #     .drop(["TOTAL"])
     # )
     html_content = requests.get("https://hashtagbasketball.com/fantasy-basketball-projections").content
-    pd_tables = pd.read_html(html_content)
-    df = pa.Table.from_pandas(
-        pd_tables[2][lambda df_: df_["R#"] != "R#"]
-    ).astype({
+    pd_tables = pd.read_html(html_content).astype({
         "R#": "int",
         "ADP": "float",
         "GP": "int",
@@ -40,6 +37,9 @@ def load_projections() -> pa.Table:
         "BLK": "float",
         "TO": "float"
     })
+    df = pa.Table.from_pandas(
+        pd_tables[2][lambda df_: df_["R#"] != "R#"]
+    )
     fg_index = df.schema.names.index("FG%")
     ft_index = df.schema.names.index("FT%")
     df = (
