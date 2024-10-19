@@ -28,7 +28,18 @@ def load_projections() -> pa.Table:
     pd_tables = pd.read_html(html_content)
     df = pa.Table.from_pandas(
         pd_tables[2][lambda df_: df_["R#"] != "R#"]
-    )
+    ).astype({
+        "R#": "int",
+        "ADP": "float",
+        "GP": "int",
+        "3PM": "float",
+        "PTS": "float",
+        "TREB": "float",
+        "AST": "float",
+        "STL": "float",
+        "BLK": "float",
+        "TO": "float"
+    })
     fg_index = df.schema.names.index("FG%")
     ft_index = df.schema.names.index("FT%")
     df = (
