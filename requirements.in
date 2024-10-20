@@ -3,6 +3,7 @@ espn_api
 lxml
 pandas
 streamlit
+pyarrow
 pyyaml
 scipy
 scikit-learn
