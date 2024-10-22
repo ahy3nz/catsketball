@@ -9,6 +9,7 @@ from espn_api.basketball import Player, League, Team
 
 import constants
 
+YEAR = '2025'
 
 def get_num_games(
     schedule: pd.DataFrame, 
@@ -55,27 +56,27 @@ def get_avg_stats_player(player: Player, include_dtdq=False, include_o=False):
         (_is_dtdq(player) and not include_dtdq)
     ):
         return defaultdict(int)
-    if '2024' in player.stats:
-        if 'avg' in player.stats['2024']:
+    if YEAR in player.stats:
+        if 'avg' in player.stats[YEAR]:
             stat_estimates.append(
                 {
-                    k: player.stats['2024']['avg'].get(k, 0)
+                    k: player.stats[YEAR]['avg'].get(k, 0)
                     for k in contants.keep_keys
                 }
             )
-    if '2024_projected' in player.stats:
-        if 'avg' in player.stats['2024_projected']:
+    if f'{YEAR}_projected' in player.stats:
+        if 'avg' in player.stats[f'{YEAR}_projected']:
             stat_estimates.append(
                 {
-                    k: player.stats['2024_projected']['avg'].get(k, 0)
+                    k: player.stats[f'{YEAR}_projected']['avg'].get(k, 0)
                     for k in constants.keep_keys
                 }
             )
-    if '2024_last_30' in player.stats:
-        if 'avg' in player.stats['2024_last_30']:
+    if f'{YEAR}_last_30' in player.stats:
+        if 'avg' in player.stats[f'{YEAR}_last_30']:
             stat_estimates.append(
                 {
-                    k: player.stats['2024_last_30']['avg'].get(k, 0)
+                    k: player.stats[f'{YEAR}_last_30']['avg'].get(k, 0)
                     for k in constants.keep_keys
                 }
             )

@@ -6,7 +6,7 @@ import yaml
 
 keep_keys = [
     'PTS', 'BLK', "STL", "REB", 'AST', 'TO', 
-    'FGM', 'FGA', 'FTM', 'FTA', '3PTM'
+    'FGM', 'FGA', 'FTM', 'FTA', '3PM'
 ]
 
 

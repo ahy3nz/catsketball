@@ -10,6 +10,8 @@ st.set_page_config(
 
 import constants, espn_stats, stat_analysis, styling
 
+YEAR = 2025
+
 st.title(":basketball:")
 league_tab, player_tab = st.tabs(["League-based comparisons", "Static player comparisons"])
 # This first form submits ESPN league settings
@@ -43,7 +45,7 @@ with league_tab:
             league_id=st.session_state['league_id'],
             espn_s2=st.session_state['espn_s2'],
             swid=st.session_state['swid'],
-            year=2024
+            year=YEAR
         )
         team_mapping = espn_stats.build_team_mapping(league)
 
