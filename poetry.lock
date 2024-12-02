@@ -2710,13 +2710,13 @@ tests = ["cython", "littleutils", "pygments", "pytest", "typeguard"]
 
 [[package]]
 name = "streamlit"
-version = "1.40.1"
+version = "1.40.2"
 description = "A faster way to build and share data apps"
 optional = false
-python-versions = "!=3.9.7,>=3.8"
+python-versions = "!=3.9.7,>=3.9"
 files = [
-    {file = "streamlit-1.40.1-py2.py3-none-any.whl", hash = "sha256:b9d7a317a0cc88edd7857c7e07dde9cf95647d3ae51cbfa8a3db82fbb8a2990d"},
-    {file = "streamlit-1.40.1.tar.gz", hash = "sha256:1f2b09f04b6ad366a2c7b4d48104697d1c8bc33f48bdf7ed939cc04c12d3aec6"},
+    {file = "streamlit-1.40.2-py2.py3-none-any.whl", hash = "sha256:7f6d1379a590f9625a6aee79ca73ceccff03cd2e05a3acbe5fe98915c27a7ffe"},
+    {file = "streamlit-1.40.2.tar.gz", hash = "sha256:0cc131fc9b18065feaff8f6f241c81164ad37d8d9e3a85499a0240aaaf6a6a61"},
 ]
 
 [package.dependencies]
@@ -2725,7 +2725,7 @@ blinker = ">=1.0.0,<2"
 cachetools = ">=4.0,<6"
 click = ">=7.0,<9"
 gitpython = ">=3.0.7,<3.1.19 || >3.1.19,<4"
-numpy = ">=1.20,<3"
+numpy = ">=1.23,<3"
 packaging = ">=20,<25"
 pandas = ">=1.4.0,<3"
 pillow = ">=7.1.0,<12"
@@ -3016,4 +3016,4 @@ test = ["websockets"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "a7eb46864f2a73818fc9c26dd96e3c81bb1e3c7657074f119b4acd525832b048"
+content-hash = "106c4238d7fd7910cc7193132c1f65bdf57882cec87b34ff2abd249fb5196f1a"
