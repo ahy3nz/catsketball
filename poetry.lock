@@ -572,16 +572,17 @@ files = [
 
 [[package]]
 name = "espn-api"
-version = "0.43.0"
+version = "0.44.1"
 description = "ESPN API"
 optional = false
 python-versions = "*"
 files = [
-    {file = "espn_api-0.43.0-py3-none-any.whl", hash = "sha256:f44dca0f4a4242b7c1449b01e80a90eb7c883cb3acf32c1ce4fe3fca3365b7ec"},
+    {file = "espn_api-0.44.1-py3-none-any.whl", hash = "sha256:155ac70f4a920c86dde962326894fe38bba8612053b879dd5fe7082cb57ec25c"},
 ]
 
 [package.dependencies]
 requests = ">=2.0.0,<3.0.0"
+urllib3 = "<=2.2.3"
 
 [[package]]
 name = "executing"
@@ -3016,4 +3017,4 @@ test = ["websockets"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "1a5aeb2ef93c5b9cd1a1ab7913264fe1a1a4c1df07af37f3de2cffa64fdc720f"
+content-hash = "710b4e7255bfa917a87486ebdce335e87494edb8f8830204715d89ff1ee88bd6"
