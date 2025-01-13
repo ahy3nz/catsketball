@@ -75,7 +75,7 @@ pillow==10.4.0 ; python_version >= "3.11" and python_version < "4.0"
 platformdirs==4.3.6 ; python_version >= "3.11" and python_version < "4.0"
 prometheus-client==0.21.0 ; python_version >= "3.11" and python_version < "4.0"
 prompt-toolkit==3.0.48 ; python_version >= "3.11" and python_version < "4.0"
-protobuf==5.28.2 ; python_version >= "3.11" and python_version < "4.0"
+protobuf==5.29.3 ; python_version >= "3.11" and python_version < "4.0"
 psutil==6.1.0 ; python_version >= "3.11" and python_version < "4.0"
 ptyprocess==0.7.0 ; python_version >= "3.11" and python_version < "4.0" and (os_name != "nt" or sys_platform != "win32" and sys_platform != "emscripten")
 pure-eval==0.2.3 ; python_version >= "3.11" and python_version < "4.0"
