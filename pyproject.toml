@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "colour>=0.1.5",
     "espn-api>=0.44.1",
     "jupyterlab>=4.3.5",
     "lxml>=5.3.1",
