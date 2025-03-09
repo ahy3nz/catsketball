@@ -1,4 +1,5 @@
 import copy
+import re
 import requests
 from typing import Any, Dict, Optional
 
@@ -14,6 +15,7 @@ import streamlit as st
 
 STAT_COLS = ["FG%", "FT%", "3PM", "PTS", "TREB", "AST", "STL", "BLK", "TO"]
 POSITIONS = ["PG", "SG", "SF", "PF", "C"]
+RE_PATTERN = r'^(\d+)*'#\s*(.*)'
 
 @st.cache_data
 def load_projections() -> pa.Table:
@@ -26,8 +28,10 @@ def load_projections() -> pa.Table:
     # )
     html_content = requests.get("https://hashtagbasketball.com/fantasy-basketball-projections").content
     pd_tables = pd.read_html(html_content)
-    df = pa.Table.from_pandas(
-        pd_tables[2][lambda df_: df_["R#"] != "R#"]
+    pd_df = pd_tables[2][lambda df_: df_["R#"] != "R#"]
+    pd_df["R#"] = pd_df["R#"].apply(lambda val: re.search(RE_PATTERN, val).group(0))
+    pd_df = (
+        pd_df
         .astype({
             "R#": "int",
             "ADP": "float",
@@ -41,6 +45,7 @@ def load_projections() -> pa.Table:
             "TO": "float"
         })
     )
+    df = pa.Table.from_pandas(pd_df)
     fg_index = df.schema.names.index("FG%")
     ft_index = df.schema.names.index("FT%")
     df = (
