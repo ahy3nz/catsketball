@@ -23,3 +23,8 @@ updates:
         dependency-type: "all"
       - dependency-name: "pyyaml"
         dependency-type: "all"
+        updates:
+  - package-ecosystem: "uv"
+    directory: "/"
+    schedule:
+      interval: "weekly"
