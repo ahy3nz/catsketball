@@ -60,9 +60,19 @@ def load_projections() -> pa.Table:
     #     .select(["PLAYER", "R#", "ADP", "GP", "drafted_by", "POS", "TEAM", *STAT_COLS, "MPG", *POSITIONS])
     # )
     df = (
-        pd.read_csv("./staticdata/nba_projections_full_1_77.csv")
+        #pd.read_csv("./staticdata/nba_projections_full_1_77.csv")
+        pd.read_html("https://fanscout.pro/projections")[0]
+        .rename(columns={
+            "Name": "PLAYER",
+            "G": "GP",
+            "M": "MPG",
+            "TPM": "3PM",
+            "REB": "TREB",
+            "TOV": "TO"
+        })
         .pipe(remove_percentage_symbol)
         .pipe(compute_fgm_fta)
+        .sort_values("Value", ascending=False)
         .assign(
             POS=None,
             drafted_by=0,

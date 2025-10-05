@@ -158,11 +158,11 @@ with player_tab:
     st.caption("Modify the `drafted_by` column to update subsequent tables")
     st.data_editor(
         st.session_state.projections_modified.select([
-            "PLAYER", "RNK", "drafted_by", "POS", 
+            "PLAYER", "RNK", "Value", "drafted_by", "POS", 
             "GP", *stat_analysis.STAT_COLS, "MPG",
         ]),
         hide_index=True,
-        disabled=["PLAYER", "RNK", "POS", "GP", *stat_analysis.STAT_COLS, "MPG"],
+        disabled=["PLAYER", "RNK", "Value", "POS", "GP", *stat_analysis.STAT_COLS, "MPG"],
         width='stretch',
         on_change=stat_analysis.update_zscores,
         key="drafting_changes"
@@ -172,7 +172,7 @@ with player_tab:
     if st.session_state.stdzd_table is not None:
         st.dataframe(
             st.session_state.stdzd_table[lambda df_: df_["drafted_by"] == 0]
-            [["PLAYER", "RNK", "drafted_by", "POS", 
+            [["PLAYER", "RNK", "Value", "drafted_by", "POS", 
                 "GP", *stat_analysis.STAT_COLS, "MPG",
             ]]
         )
