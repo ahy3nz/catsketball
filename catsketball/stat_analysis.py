@@ -19,53 +19,56 @@ RE_PATTERN = r'^(\d+)*'#\s*(.*)'
 
 @st.cache_data
 def load_projections() -> pa.Table:
-    # df = (
-    #     csv.read_csv(
-    #         Path(__file__).parent / 
-    #         "staticdata/hashtagbballsnapshot.csv"
-    #     )
-    #     .drop(["TOTAL"])
+    # html_content = requests.get("https://hashtagbasketball.com/fantasy-basketball-projections").content
+    # pd_tables = pd.read_html(html_content)
+    # pd_df = pd_tables[2][lambda df_: df_["R#"] != "R#"]
+    # pd_df["R#"] = pd_df["R#"].apply(lambda val: re.search(RE_PATTERN, val).group(0))
+    # pd_df = (
+    #     pd_df
+    #     .astype({
+    #         "R#": "int",
+    #         "ADP": "float",
+    #         "GP": "int",
+    #         "3PM": "float",
+    #         "PTS": "float",
+    #         "TREB": "float",
+    #         "AST": "float",
+    #         "STL": "float",
+    #         "BLK": "float",
+    #         "TO": "float"
+    #     })
     # )
-    html_content = requests.get("https://hashtagbasketball.com/fantasy-basketball-projections").content
-    pd_tables = pd.read_html(html_content)
-    pd_df = pd_tables[2][lambda df_: df_["R#"] != "R#"]
-    pd_df["R#"] = pd_df["R#"].apply(lambda val: re.search(RE_PATTERN, val).group(0))
-    pd_df = (
-        pd_df
-        .astype({
-            "R#": "int",
-            "ADP": "float",
-            "GP": "int",
-            "3PM": "float",
-            "PTS": "float",
-            "TREB": "float",
-            "AST": "float",
-            "STL": "float",
-            "BLK": "float",
-            "TO": "float"
-        })
-    )
-    df = pa.Table.from_pandas(pd_df)
-    fg_index = df.schema.names.index("FG%")
-    ft_index = df.schema.names.index("FT%")
-    df = (
-        df.append_column("drafted_by", [[0]*len(df)])
-        .set_column(
-            fg_index, "FG%", 
-            [[format_percentages(a) for a in df["FG%"]]]
-        )
-        .set_column(
-            ft_index, "FT%", 
-            [[format_percentages(a) for a in df["FT%"]]]
-        )
-    )
-    for pos in POSITIONS:
-        df = df.append_column(pos, pc.count_substring(df["POS"], pos))
+    # df = pa.Table.from_pandas(pd_df)
+    # fg_index = df.schema.names.index("FG%")
+    # ft_index = df.schema.names.index("FT%")
+    # df = (
+    #     df.append_column("drafted_by", [[0]*len(df)])
+    #     .set_column(
+    #         fg_index, "FG%", 
+    #         [[format_percentages(a) for a in df["FG%"]]]
+    #     )
+    #     .set_column(
+    #         ft_index, "FT%", 
+    #         [[format_percentages(a) for a in df["FT%"]]]
+    #     )
+    # )
+    # for pos in POSITIONS:
+    #     df = df.append_column(pos, pc.count_substring(df["POS"], pos))
     
+    # df = (
+    #     df.sort_by("ADP")
+    #     .select(["PLAYER", "R#", "ADP", "GP", "drafted_by", "POS", "TEAM", *STAT_COLS, "MPG", *POSITIONS])
+    # )
     df = (
-        df.sort_by("ADP")
-        .select(["PLAYER", "R#", "ADP", "GP", "drafted_by", "POS", "TEAM", *STAT_COLS, "MPG", *POSITIONS])
+        pd.read_csv("./staticdata/nba_projections_full_1_77.csv")
+        .pipe(remove_percentage_symbol)
+        .pipe(compute_fgm_fta)
+        .assign(
+            POS=None,
+            drafted_by=0,
+        )
     )
+    df = pa.Table.from_pandas(df)
     
     return df
 
@@ -78,6 +81,17 @@ def format_percentages(pa_string):
         return float(val[0:val.index('(')])
     else:
         return float(val)
+
+def remove_percentage_symbol(pd_df):
+    pd_df["FG%"] = pd_df["FG%"].str.rstrip("%").astype(float)
+    pd_df["FT%"] = pd_df["FT%"].str.rstrip("%").astype(float)
+    return pd_df
+
+def compute_fgm_fta(pd_df):
+    return pd_df.assign(
+        FGM=lambda df_: df_["FG%"] * df_["FGA"],
+        FTM=lambda df_: df_["FT%"] * df_["FTA"],
+    )
     
     
 def encode_positions(val):

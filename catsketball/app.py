@@ -158,12 +158,12 @@ with player_tab:
     st.caption("Modify the `drafted_by` column to update subsequent tables")
     st.data_editor(
         st.session_state.projections_modified.select([
-            "PLAYER", "R#", "ADP", "drafted_by", "POS", 
-            "TEAM", "GP", *stat_analysis.STAT_COLS, "MPG",
+            "PLAYER", "RNK", "drafted_by", "POS", 
+            "GP", *stat_analysis.STAT_COLS, "MPG",
         ]),
         hide_index=True,
-        disabled=["PLAYER", "R#", "ADP", "POS", "TEAM", "GP", *stat_analysis.STAT_COLS, "MPG"],
-        use_container_width=True,
+        disabled=["PLAYER", "RNK", "POS", "GP", *stat_analysis.STAT_COLS, "MPG"],
+        width='stretch',
         on_change=stat_analysis.update_zscores,
         key="drafting_changes"
     )
@@ -172,8 +172,8 @@ with player_tab:
     if st.session_state.stdzd_table is not None:
         st.dataframe(
             st.session_state.stdzd_table[lambda df_: df_["drafted_by"] == 0]
-            [["PLAYER", "R#", "ADP", "drafted_by", "POS", 
-                "TEAM", "GP", *stat_analysis.STAT_COLS, "MPG",
+            [["PLAYER", "RNK", "drafted_by", "POS", 
+                "GP", *stat_analysis.STAT_COLS, "MPG",
             ]]
         )
         st.header("Team comparison")
@@ -182,7 +182,7 @@ with player_tab:
             styling.style_categories(
                 team_comparison.drop(index=[0]), include_tooltips=False,
             ), 
-            use_container_width=True,
+            width='stretch',
             column_config={
                 c: st.column_config.NumberColumn(
                     c,
@@ -198,14 +198,14 @@ with player_tab:
         st.header("Team comparison")
         st.dataframe(None)
 
-    st.header("Positional comparison")
-    st.caption("Z-scores of players within position")
-    for pos in stat_analysis.POSITIONS:
-        with st.expander(pos):
-            projections = (
-                st.session_state.projections_modified.to_pandas()
-                [lambda df_: df_[pos]==1]
-            )
-            projections[stat_analysis.STAT_COLS] = projections[stat_analysis.STAT_COLS].apply(zscore)
-            st.dataframe(projections.drop(columns=stat_analysis.POSITIONS), use_container_width=True)
+#    st.header("Positional comparison")
+#    st.caption("Z-scores of players within position")
+#    for pos in stat_analysis.POSITIONS:
+#        with st.expander(pos):
+#            projections = (
+#                st.session_state.projections_modified.to_pandas()
+#                [lambda df_: df_[pos]==1]
+#            )
+#            projections[stat_analysis.STAT_COLS] = projections[stat_analysis.STAT_COLS].apply(zscore)
+#            st.dataframe(projections.drop(columns=stat_analysis.POSITIONS), width='stretch')
 
