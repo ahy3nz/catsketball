@@ -281,8 +281,8 @@ decorator==5.2.1 ; python_version >= "3.11" \
 defusedxml==0.7.1 ; python_version >= "3.11" \
     --hash=sha256:1bb3032db185915b62d7c6209c5a8792be6a32ab2fedacc84e01b52c51aa3e69 \
     --hash=sha256:a352e7e428770286cc899e2542b6cdaedb2b4953ff269a210103ec58f6198a61
-espn-api==0.45.1 ; python_version >= "3.11" \
-    --hash=sha256:42293d24def0ddac3e194463781e92c7d6b1a4519b63ee9c2eb2314923ce6f03
+espn-api==0.46.0 ; python_version >= "3.11" \
+    --hash=sha256:b3d3f6f5cb857a8478ffdc9da078031f54adb74270e6508d2e530f6b15331ce2
 executing==2.2.1 ; python_version >= "3.11" \
     --hash=sha256:3632cc370565f6648cc328b32435bd120a1e4ebb20c77e3fdde9a13cd1e533c4 \
     --hash=sha256:760643d3452b4d777d295bb167ccc74c64a81df23fb5e08eff250c425a4b2017
