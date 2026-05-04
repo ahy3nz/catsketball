@@ -1457,9 +1457,9 @@ soupsieve==2.8 ; python_version >= "3.11" \
 stack-data==0.6.3 ; python_version >= "3.11" \
     --hash=sha256:836a778de4fec4dcd1dcd89ed8abff8a221f58308462e1c4aa2a3cf30148f0b9 \
     --hash=sha256:d5558e0c25a4cb0853cddad3d77da9891a08cb85dd9f9f91b9f8cd66e511e695
-streamlit==1.56.0 ; python_version >= "3.11" \
-    --hash=sha256:1176acfa89ae1318b79078e8efe689a9d02e8d58e325c00fc0e55fa2f3fe8d6a \
-    --hash=sha256:8677a335734a30a51bc57ad0ec910e365d95f7c456fc02c60032927cd0729dc5
+streamlit==1.57.0 ; python_version >= "3.11" \
+    --hash=sha256:0b028d305c1a1a757071b2c9504966787602842fc8af6e873795ca58d2b4d12f \
+    --hash=sha256:0d1d41972aeade5637dbb0e7f0eefa5312272f85304923d240a1b1f0475249c8
 tenacity==9.1.2 ; python_version >= "3.11" \
     --hash=sha256:1169d376c297e7de388d18b4481760d478b0e99a777cad3a9c86e556f4b697cb \
     --hash=sha256:f77bf36710d8b73a50b2dd155c97b870017ad21afe6ab300326b0371b3b05138
